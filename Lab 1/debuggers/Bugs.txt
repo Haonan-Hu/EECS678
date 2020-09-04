@@ -1,0 +1,22 @@
+< Bugs.c >
+Here is the bug list:
+    1). Increase the size of array to 7 and add bug_info.sentence[6] = NULL. This will make bug_info
+        sentence ends with NULL, and prevent echo function from cashing. And free it after using.
+    2). In function echoohce, I dereferenced iter with *iter in the first for loop, and I changed condition
+        of the second for loop from *iter != Null to *iter = *stop_beginning
+    3). I put bug_info.num_bugs_on_mars = 0 along with struct declearation, prevent use of uninitialized
+        variable happen on line 120.
+    4). Need to free bug_info.sentence[2] before set it to be "butterfly". And set it to be NULL after free it 
+        if I need it to print out (null)
+    5). free(bug_info.useless_bug) is useless, it will cause memory leak and seg fault
+
+< valgrind_test.c >
+    1). Need to free "still_reachable" because it is not being freed
+    2). Initialize "uniniitialized_variable" to prevent comditional jump
+    3). Free "*definitely_lost" which points to malloc(7) and "definitely_lost" which points 
+        to malloc(sizeof(void*)) in the for loop, you need to free them all
+    4). "possibly_lost" is allocated but not freed, and shift 4 bits, we need to let it points to the
+        original location and free it
+
+Quizz:
+    Ans: Yes it is possible, as long as you include the function.h file in main.c, you can access it

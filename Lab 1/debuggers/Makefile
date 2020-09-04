@@ -1,4 +1,4 @@
-STUDENT_ID=XXXXXXX
+STUDENT_ID=2863545
 
 all: bugs valgrind_test
 
@@ -25,9 +25,9 @@ clean:
 	-rm bugs valgrind_test bugs_output.txt valgrind_output.txt
 
 tar: clean
-	mkdir $(STUDENT_ID)_eecs678_lab2
-	cp bugs.c Makefile $(STUDENT_ID)_eecs678_lab2
-	tar cfzv $(STUDENT_ID)_eecs678_lab2.tar.gz $(STUDENT_ID)_eecs678_lab2
-	-rm -rf $(STUDENT_ID)_eecs678_lab2
+	mkdir $(STUDENT_ID)_eecs678_lab1
+	cp bugs.c Bugs.txt Makefile valgrind_test.c $(STUDENT_ID)_eecs678_lab1
+	tar cfzv $(STUDENT_ID)_eecs678_lab1.tar.gz $(STUDENT_ID)_eecs678_lab1
+	-rm -rf $(STUDENT_ID)_eecs678_lab1
 
 .PHONY: clean test

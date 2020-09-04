@@ -26,7 +26,7 @@ clean:
 
 tar: clean
 	mkdir $(STUDENT_ID)_eecs678_lab1
-	cp bugs.c Bugs.txt Makefile valgrind_test.c $(STUDENT_ID)_eecs678_lab1
+	cp bugs.c Bugs.txt Makefile valgrind_test.c bugs_desired.txt valgrind_desired.txt $(STUDENT_ID)_eecs678_lab1
 	tar cfzv $(STUDENT_ID)_eecs678_lab1.tar.gz $(STUDENT_ID)_eecs678_lab1
 	-rm -rf $(STUDENT_ID)_eecs678_lab1
 

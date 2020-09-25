@@ -199,16 +199,31 @@ char* fmrCompute(fmrNode* node){
 
 	//STEP 1
 	//Initialize pipes p1, p2, p3 and p4
+	pipe(p1);
+	pipe(p2);
+	pipe(p3);
+	pipe(p4);
 	
 	//STEP 2
 	//Create first child process with fork and store the return value in pid_1
-	if(/*STEP 3 - Condition for first child*/){		
+	pid_1 = fork();
+
+	//STEP 3 - Condition for first child
+	if(pid_1 == 0){		
 		
 		//STEP 4
 		//In this first child process, we want to send everything that is printed on the standard output, to the next child process through pipe p1
 		//So, redirect standard output of this child process to p1's write end
 		//And, close all other pipe ends except the ones used to redirect I/O (very important)
-		
+		dup2(p1[1], STDOUT_FILENO);
+		close(p1[0]);
+		close(p2[0]);
+		close(p2[1]);
+		close(p3[0]);
+		close(p3[1]);
+		close(p4[0]);
+		close(p4[1]);
+
 		char argv[255];
 		memset(argv, '\0', sizeof(argv));
 		for(int i=0; strcmp(node->elements[i], "#"); i++){
@@ -216,16 +231,19 @@ char* fmrCompute(fmrNode* node){
 			strcat(argv, "\n");
 		}
 
-
 		//STEP 5
 		//Execute the /bin/echo program with argv as argument
+		execl("/bin/echo", argv, (char*)NULL);
 		
 		exit(0);
 	}
 	
 	//STEP 6
 	//Create second child process with fork and store the return value in pid_2
-	if(/*STEP 7 - Condition for second child*/){		
+	pid_2 = fork();
+
+	//STEP 7 - Condition for second child
+	if(pid_2 == 0){		
 	
 		//STEP 8
 		//In this second child process, the output from the first child process (/bin/echo) will be taken as input
@@ -233,19 +251,30 @@ char* fmrCompute(fmrNode* node){
 		//Also, the output from this second child process will be sent to the next child process through pipe p2
 		//So, redirect the standard output to the necessary pipe end
 		//And, close all other pipe ends except the ones used to redirect I/O (very important)
-		
+		dup2(p1[0], STDIN_FILENO);
+		dup2(p2[1], STDOUT_FILENO);
+		close(p1[1]);
+		close(p2[0]);
+		close(p3[0]);
+		close(p3[1]);
+		close(p4[0]);
+		close(p4[1]);
 
 
 		//STEP 9
 		//Execute the ./filter program with the necessary arguments from node
 		//node is an fmrNode* type (please check the structure definitions at the top to find out how we can access the filter arguments using fmrNode* type)
-				
+		execl("./filter",STDIN_FILENO, node->fNode.operator, node->fNode.operand, (char*)NULL);
+
 		exit(0);
 	}
 
 	//STEP 10
 	//Create third child process with fork and store the return value in pid_3
-	if(/*STEP 11 - Condition for third child*/){		
+	pid_3 = fork();
+
+	//STEP 11 - Condition for third child
+	if(pid_3 == 0){		
 	
 		//STEP 12
 		//In this third child process, the output from the second child process (./filter) will be taken as input
@@ -253,19 +282,30 @@ char* fmrCompute(fmrNode* node){
 		//Also, the output from this third child process will be sent to the next child process through pipe p3
 		//So, redirect the standard output to the necessary pipe end
 		//And, close all other pipe ends except the ones used to redirect I/O (very important)
-		
+		dup2(p2[0], STDIN_FILENO);
+		dup2(p3[1], STDOUT_FILENO);
+		close(p1[0]);
+		close(p1[1]);
+		close(p2[1]);
+		close(p3[0]);
+		close(p4[0]);
+		close(p4[1]);
 
 
 		//STEP 13
 		//Execute the ./map program with the necessary arguments from node
 		//node is an fmrNode* type (please check the structure definitions at the top to find out how we can access the map arguments using fmrNode* type)
-				
+		execl("./map",STDIN_FILENO, node->mNode.operator, node->mNode.operand, (char*)NULL);
+		
 		exit(0);
 	}
 
 	//STEP 14
 	//Create fourth child process with fork and store the return value in pid_4
-	if(/*STEP 15 - Condition for fourth child*/){		
+	pid_4 = fork();
+
+	//STEP 15 - Condition for fourth child
+	if(pid_4 == 0){		
 	
 		//STEP 16
 		//In this fourth child process, the output from the third child process (./map) will be taken as input
@@ -273,13 +313,21 @@ char* fmrCompute(fmrNode* node){
 		//Also, the output from this fourth child process will be sent to the parent process through pipe p4
 		//So, redirect the standard output to the necessary pipe end
 		//And, close all other pipe ends except the ones used to redirect I/O (very important)
-		
+		dup2(p3[0], STDIN_FILENO);
+		dup2(p4[1], STDOUT_FILENO);
+		close(p1[0]);
+		close(p1[1]);
+		close(p2[0]);
+		close(p2[1]);
+		close(p3[1]);
+		close(p4[0]);
 
 
 		//STEP 17
 		//Execute the ./reduce program with the necessary arguments from node
 		//node is an fmrNode* type (please check the structure definitions at the top to find out how we can access the reduce arguments using fmrNode* type)
-				
+		execl("./reduce",STDIN_FILENO, node->rNode.operator, (char*)NULL);
+
 		exit(0);
 	}
 

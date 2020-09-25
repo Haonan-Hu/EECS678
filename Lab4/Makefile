@@ -15,7 +15,7 @@ map: map.c
 reduce: reduce.c
 	gcc -Wall $^ -o $@
 	
-test: 
+test: all
 	echo "inp0.txt" > desired.txt
 	./fmr inp0.txt >> desired.txt
 	echo "inp1.txt" >> desired.txt
@@ -27,7 +27,7 @@ test:
 	echo "inp4.txt" >> desired.txt
 	./fmr inp4.txt >> desired.txt
 	
-test_bonus: clean bonus test
+test_bonus: bonus test
 	
 clean:
 	rm fmr filter map reduce desired.txt

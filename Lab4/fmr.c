@@ -368,74 +368,74 @@ char* fmrCompute(fmrNode* node){
 	return buf;
 }
 
-//EXTRA CREDIT (attempt only when you have a working fmrCompute function)
-//fmrNetwork creates a hierarchical tree of ( echo-filter-map-reduce ) pipelines
-char* fmrNetwork(fmrNode* root, fmrNode* currentNode){
-	int p0[2];
+// //EXTRA CREDIT (attempt only when you have a working fmrCompute function)
+// //fmrNetwork creates a hierarchical tree of ( echo-filter-map-reduce ) pipelines
+// char* fmrNetwork(fmrNode* root, fmrNode* currentNode){
+// 	int p0[2];
 
-	//EXTRA CREDIT - STEP 1
-	//Initialize the pipe p0
+// 	//EXTRA CREDIT - STEP 1
+// 	//Initialize the pipe p0
 	
 
-	//We will visit every child node from the current node (according to the current node's dependencies)
-	//For every child node, we will create a child process
-	for(int i=0; currentNode->dependencies[i]!=-1; i++){		
-		pid_t pid_fmr;
+// 	//We will visit every child node from the current node (according to the current node's dependencies)
+// 	//For every child node, we will create a child process
+// 	for(int i=0; currentNode->dependencies[i]!=-1; i++){		
+// 		pid_t pid_fmr;
 		
-		//EXTRA CREDIT - STEP 2
-		//Create a child process for the ith child node, with fork and store the return value into pid_fmr
+// 		//EXTRA CREDIT - STEP 2
+// 		//Create a child process for the ith child node, with fork and store the return value into pid_fmr
 
-		if(/*EXTRA CREDIT - STEP 3 - Check condition for child process*/){
+// 		if(/*EXTRA CREDIT - STEP 3 - Check condition for child process*/){
 
-			//EXTRA CREDIT - STEP 4
-			//Here, we are inside a process that is dedicated for the ith child of the current node
-			//Now, this ith child node can also have child nodes of its own
-			//So, recursively call the fmrNetwork function with the appropriate arguments and store the return value into fmrVal
-			//This return value represents the final output of fmrCompute for all descendent nodes starting from this ith child
-			char* fmrVal = "Replace this string by the recursive fmrNetwork call and the return value will go into fmrVal";
+// 			//EXTRA CREDIT - STEP 4
+// 			//Here, we are inside a process that is dedicated for the ith child of the current node
+// 			//Now, this ith child node can also have child nodes of its own
+// 			//So, recursively call the fmrNetwork function with the appropriate arguments and store the return value into fmrVal
+// 			//This return value represents the final output of fmrCompute for all descendent nodes starting from this ith child
+// 			char* fmrVal = "Replace this string by the recursive fmrNetwork call and the return value will go into fmrVal";
 
 
-			//EXTRA CREDIT - STEP 5
-			//Use the write system call to send the fmrVal from the ith child node to its parent (i.e. currentNode) through pipe p0
+// 			//EXTRA CREDIT - STEP 5
+// 			//Use the write system call to send the fmrVal from the ith child node to its parent (i.e. currentNode) through pipe p0
 
-			//EXTRA CREDIT - STEP 6
-			//Close pipe p0 inside this ith child process
+// 			//EXTRA CREDIT - STEP 6
+// 			//Close pipe p0 inside this ith child process
 			
-			exit(0);
-		}
-	}
+// 			exit(0);
+// 		}
+// 	}
 
-	//EXTRA CREDIT - STEP 7
-	//We are out of the scope of the for loop which means that we are out of the scope of currentNode's children nodes
-	//So, we are now in the scope of currentNode itself
-	//currentNode will eventually "read" the fmrVals that were sent by its children through pipe p0
-	//So, we don't need the read end of pipe p0 - close the write end of pipe p0 here
+// 	//EXTRA CREDIT - STEP 7
+// 	//We are out of the scope of the for loop which means that we are out of the scope of currentNode's children nodes
+// 	//So, we are now in the scope of currentNode itself
+// 	//currentNode will eventually "read" the fmrVals that were sent by its children through pipe p0
+// 	//So, we don't need the read end of pipe p0 - close the write end of pipe p0 here
 
-	char val[50];
-	memset(val, '\0', sizeof(val));
+// 	char val[50];
+// 	memset(val, '\0', sizeof(val));
 	
 
-	//There will be as many fmrVals inside the pipe p0 as the number of currentNode's children
-	while(/*EXTRA CREDIT - STEP 8 - read from p0 and store into val*/){
-		//printf("\nFMR Node %d - FMR Value: %s\n", currentNode->id, val);
+// 	//There will be as many fmrVals inside the pipe p0 as the number of currentNode's children
+// 	while(/*EXTRA CREDIT - STEP 8 - read from p0 and store into val*/){
+// 		//printf("\nFMR Node %d - FMR Value: %s\n", currentNode->id, val);
 
-		insertElement(currentNode->elements, val);
-	}
+// 		insertElement(currentNode->elements, val);
+// 	}
 
-	//EXTRA CREDIT - STEP 9
-	//Since reading from the pipe p0 is finished, you should close the read end of pipe p0 here
+// 	//EXTRA CREDIT - STEP 9
+// 	//Since reading from the pipe p0 is finished, you should close the read end of pipe p0 here
 
 	
-	// display(*currentNode) //You can use display to print the currentNode (useful for debugging)
+// 	// display(*currentNode) //You can use display to print the currentNode (useful for debugging)
 
 
-	//EXTRA CREDIT - STEP 10
-	//At this point, we have resolved the currentNode's dependencies (i.e. inserted the fmrVals from currentNode's children, into the currentNode's elements array)
-	//So, with a completed elements array of the current node, we can now compute the ( echo-filter-map-reduce ) pipeline for the "currentNode"
-	char* fmrVal = "Replace this string by an fmrCompute call for the currentNode and the return value will be stored into fmrVal";
+// 	//EXTRA CREDIT - STEP 10
+// 	//At this point, we have resolved the currentNode's dependencies (i.e. inserted the fmrVals from currentNode's children, into the currentNode's elements array)
+// 	//So, with a completed elements array of the current node, we can now compute the ( echo-filter-map-reduce ) pipeline for the "currentNode"
+// 	char* fmrVal = "Replace this string by an fmrCompute call for the currentNode and the return value will be stored into fmrVal";
 
 
-	//Here, we return the fmrVal of the currentNode, to the parent node of the currentNode 
-	//This value is what we used as a return value of the recursive fmrNetwork call inside the for loop above (for the parent node of the currentNode)
-	return fmrVal;
-}
+// 	//Here, we return the fmrVal of the currentNode, to the parent node of the currentNode 
+// 	//This value is what we used as a return value of the recursive fmrNetwork call inside the for loop above (for the parent node of the currentNode)
+// 	return fmrVal;
+// }

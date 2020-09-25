@@ -15,7 +15,7 @@ map: map.c
 reduce: reduce.c
 	gcc -Wall $^ -o $@
 	
-test: clean all
+test: 
 	echo "inp0.txt" > desired.txt
 	./fmr inp0.txt >> desired.txt
 	echo "inp1.txt" >> desired.txt

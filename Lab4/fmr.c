@@ -48,7 +48,7 @@ int main(int argc, char* argv[]){
 	fmrNode* root;
 
 	int numberOfNodes = readInput(argv[1], &root);
-	//displayAll(root);
+	// displayAll(root);
 	
 	#ifdef LABTASK
 		for(int i=0; i<numberOfNodes; i++){
@@ -209,6 +209,7 @@ char* fmrCompute(fmrNode* node){
 	pid_1 = fork();
 
 	//STEP 3 - Condition for first child
+	
 	if(pid_1 == 0){		
 		
 		//STEP 4
@@ -233,10 +234,12 @@ char* fmrCompute(fmrNode* node){
 
 		//STEP 5
 		//Execute the /bin/echo program with argv as argument
-		execl("/bin/echo", argv, (char*)NULL);
-		
+		execl("/bin/echo", "/bin/echo", argv, (char*)NULL);
+
 		exit(0);
 	}
+	
+	
 	
 	//STEP 6
 	//Create second child process with fork and store the return value in pid_2
@@ -264,7 +267,7 @@ char* fmrCompute(fmrNode* node){
 		//STEP 9
 		//Execute the ./filter program with the necessary arguments from node
 		//node is an fmrNode* type (please check the structure definitions at the top to find out how we can access the filter arguments using fmrNode* type)
-		execl("./filter",STDIN_FILENO, node->fNode.operator, node->fNode.operand, (char*)NULL);
+		execl("./filter","./filter", node->fNode.operator, node->fNode.operand, (char*)NULL);
 
 		exit(0);
 	}
@@ -295,7 +298,7 @@ char* fmrCompute(fmrNode* node){
 		//STEP 13
 		//Execute the ./map program with the necessary arguments from node
 		//node is an fmrNode* type (please check the structure definitions at the top to find out how we can access the map arguments using fmrNode* type)
-		execl("./map",STDIN_FILENO, node->mNode.operator, node->mNode.operand, (char*)NULL);
+		execl("./map","./map", node->mNode.operator, node->mNode.operand, (char*)NULL);
 		
 		exit(0);
 	}
@@ -326,7 +329,7 @@ char* fmrCompute(fmrNode* node){
 		//STEP 17
 		//Execute the ./reduce program with the necessary arguments from node
 		//node is an fmrNode* type (please check the structure definitions at the top to find out how we can access the reduce arguments using fmrNode* type)
-		execl("./reduce",STDIN_FILENO, node->rNode.operator, (char*)NULL);
+		execl("./reduce","./reduce", node->rNode.operator, (char*)NULL);
 
 		exit(0);
 	}
@@ -335,21 +338,32 @@ char* fmrCompute(fmrNode* node){
 	//In this parent process scope, the final output from the fourth child process will eventually be taken as input
 	//Close all other pipe ends here, except pipe p4, since p4 will be used to read in the output of the fourth child process
 	//Closing all other pipe ends is crucial
-	
+	close(p1[0]);
+	close(p1[1]);
+	close(p2[0]);
+	close(p2[1]);
+	close(p3[0]);
+	close(p3[1]);
 
 	//STEP 19
 	//Wait for all the four child processes here
 	//The wait is necessary because we want to get a synchronous output from the four child processes
 	//Also, we don't want to end up with orphaned processes; so, the waits are essential
-	
+	waitpid(pid_1, NULL, 0);
+	waitpid(pid_2, NULL, 0);
+	waitpid(pid_3, NULL, 0);
+	waitpid(pid_4, NULL, 0);
 
 	char* buf = (char*)malloc(25*sizeof(char*));
 	memset(buf, '\0', 25);
 	//STEP 20
 	//Use the read system call to read the final output of the ( echo-filter-map-reduce ) pipeline, from p4 and store the read value into buf
+	read(p4[0], buf, sizeof(buf));
 
 	//STEP 21
 	//Close p4 (very important)
+	close(p4[0]);
+	close(p4[1]);
 
 	return buf;
 }

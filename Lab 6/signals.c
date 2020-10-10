@@ -30,6 +30,7 @@ void check_count(){
     
     /* If user hasn't responded in 5 seconds, exit the program */
     //YOUR CODE
+    alarm(5);
 
     
     fgets(answer, sizeof(answer), stdin);
@@ -41,7 +42,8 @@ void check_count(){
 
       /* Keep track of the fact that the user has responded */
       got_response = 1;
-      
+      alarm(0);
+
       /* Reset the ctrl_c_count counter */
       ctrl_c_count = 0;
     }
@@ -51,6 +53,7 @@ void check_count(){
       
       /* Close the read end of the pipe p */
       //YOUR CODE
+      close(p[0]);
     }
     
     printf("\nWriting to the pipe p's write end\n");
@@ -70,12 +73,18 @@ void catch_int(int sig_num)
 {
   /* Increment the ctrl_c_counter and call check_count function */
   //YOUR CODE
-  
+  ctrl_c_count++;
+  check_count();
 }
 
 /* Implement alarm handler - (The program should exit after receiving the alarm) */
 //YOUR CODE
-
+void catch_alarm(int sig_num)
+{
+  printf("No response from the user! Exiting ...\n");
+  fflush(stdout);
+  exit(-1);
+}
 
 int main(int argc, char* argv[])
 {
@@ -86,23 +95,34 @@ int main(int argc, char* argv[])
   
   /* clear the memory at sa - by filling up the memory location at sa with the value 0 till the size of sa - execute  "man memset" from the terminal */
   //YOUR CODE
-  
+  sigfillset(&mask_set);
 
   /* setup mask_set */
   //YOUR CODE
-  
+  sa.sa_mask = mask_set;
+  sa.sa_flags = 0;
   
   /* ensure in the mask_set that the alarm signal does not get blocked while in another signal handler */
   //YOUR CODE
-  
+  sigdelset(&sa.sa_mask, SIGALRM);
   
   /* set signal handlers for SIGPIPE, SIGINT, and SIGALRM */
   //YOUR CODE
-  
+  sa.sa_handler = catch_pipe;
+  sigaction(SIGPIPE, &sa, NULL);
+
+  sa.sa_handler = catch_int;
+  sigaction(SIGINT, &sa, NULL);
+
+  sa.sa_handler = catch_alarm;
+  sigaction(SIGALRM, &sa, NULL);
   
   /* ensure that the program keeps running to receive the signals */
   //YOUR CODE
-  
+  while(1)
+  {
+    pause();
+  }
 
   return 0;
 }

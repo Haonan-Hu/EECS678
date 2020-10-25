@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <semaphore.h>
+#include <dispatch/dispatch.h>
 
 /*
  * Define constants for how big the shared queue should be and how
@@ -24,8 +25,8 @@
 #define CONSUMER_CPU   25
 #define CONSUMER_BLOCK 10
 
-#define YOU_WILL_DETERMINE_FOR_PRODUCERS 678
-#define YOU_WILL_DETERMINE_FOR_CONSUMERS 678
+#define YOU_WILL_DETERMINE_FOR_PRODUCERS 0
+#define YOU_WILL_DETERMINE_FOR_CONSUMERS 5
 
 /*****************************************************
  *   Shared Queue Related Structures and Routines    *
@@ -293,7 +294,7 @@ void *producer (void *parg)
      * produce, so wait until it is not full. Use sem_wait on the
      * appropriate semaphore from the fifo queue, for the producer.
      */
-    
+     sem_wait(fifo->slotsToGet);
 	
 	/*
      * Check to see if the total produced by all producers has reached
@@ -302,6 +303,7 @@ void *producer (void *parg)
      * that are in the waiting queue for fifo->slotsToPut and fifo->slotsToGet respectively
      */
     if (*total_inserted >= WORK_MAX) {
+      sem_post(fifo->slotsToPut);
       break;
     }
 
@@ -311,18 +313,21 @@ void *producer (void *parg)
      * queue. We are accessing the shared queue fifo in this section.
      * So, we should ensure mutual exclusion.
      */
+    pthread_mutex_lock(fifo->mutex);
+
     item = (*total_inserted);
     queueAdd (fifo, item);
-	++(*total_inserted);
-    
+	  ++(*total_inserted);
+
     /*
      * Announce the production outside the critical section 
-	 * Let the consumers know that there is item in the buffer
+	   * Let the consumers know that there is item in the buffer
      */
+
     printf("prod %d:  %d.\n", my_tid, item);
 
+    pthread_mutex_unlock(fifo->mutex);
   }
-
   printf("prod %d:  exited\n", my_tid);
   return (NULL);
 }
@@ -351,7 +356,7 @@ void *consumer (void *carg)
      * produce, so wait until it is not empty. Use sem_wait on the
      * appropriate semaphore from the fifo queue, for the consumer.
      */
-    
+    sem_wait(fifo->slotsToPut);
 	
 	/*
      * If total consumption has reached the configured limit, we can
@@ -360,6 +365,7 @@ void *consumer (void *carg)
      * queue for fifo->slotsToPut and fifo->slotsToGet respectively
      */
     if (*total_consumed >= WORK_MAX) {
+      sem_post(fifo->slotsToGet);
       break;
     }
 
@@ -371,9 +377,10 @@ void *consumer (void *carg)
      * others are busy consuming them. We are accessing the shared queue 
      * fifo in this section. So, we should ensure mutual exclusion.
      */
+    pthread_mutex_lock(fifo->mutex);
+
     queueRemove (fifo, &item);
     (*total_consumed)++;
-
 
     /*
      * Do work outside the critical region to consume the item
@@ -384,6 +391,7 @@ void *consumer (void *carg)
     do_work(CONSUMER_CPU,CONSUMER_CPU);
     printf ("con %d:   %d.\n", my_tid, item);
 
+    pthread_mutex_unlock(fifo->mutex);
   }
 
   printf("con %d:   exited\n", my_tid);

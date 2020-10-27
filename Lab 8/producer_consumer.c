@@ -327,15 +327,7 @@ void *producer (void *parg)
      * Announce the production outside the critical section 
 	   * Let the consumers know that there is item in the buffer
      */
-    if(fifo->full == 1)
-    {
-      printf("prod %d:  %s.\n", my_tid, "FULL");
-    }
-    else
-    {
-      printf("prod %d:  %d.\n", my_tid, item);
-    }
-    // sem_post(fifo->slotsToGet);
+    printf("prod %d:  %d.\n", my_tid, item);
   }
   printf("prod %d:  exited\n", my_tid);
   return (NULL);
@@ -379,7 +371,6 @@ void *consumer (void *carg)
       break;
     }
 
-
     /*
      * Remove the next item from the queue. Increment the count of the
      * total consumed. Note that item is a local copy so this
@@ -403,15 +394,7 @@ void *consumer (void *carg)
      */
     do_work(CONSUMER_CPU,CONSUMER_CPU);
 
-    if(fifo->empty == 1)
-    {
-      printf ("con %d:   %s.\n", my_tid, "EMPTY");
-    }
-    else
-    {
-      printf ("con %d:   %d.\n", my_tid, item);
-    }
-    // sem_post(fifo->slotsToPut);
+    printf ("con %d:   %d.\n", my_tid, item);
   }
 
   printf("con %d:   exited\n", my_tid);

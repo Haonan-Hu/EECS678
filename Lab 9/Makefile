@@ -22,7 +22,7 @@ dp_waiter: dp_waiter.c
 # Add the dp_asymmetric_test and dp_waiter_test targets to test as you implement
 # them
 
-test: dp_test #dp_asymmetric_test dp_waiter_test
+test: dp_test dp_asymmetric_test dp_waiter_test 
 
 dp_test: dp
 	./dp

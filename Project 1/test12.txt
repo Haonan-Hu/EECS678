@@ -1,0 +1,4 @@
+cd /mnt/c/Users/Chance/Desktop/eecs-678-quash/exercise1
+./HelloWorld 1 &
+jobs
+quit

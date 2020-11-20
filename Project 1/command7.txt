@@ -1,0 +1,5 @@
+set PATH=/mnt/c/Users/Chance/Desktop/eecs-678-quash
+file7
+set MYVAR="NEW_ENV_VAR"
+file7
+quit

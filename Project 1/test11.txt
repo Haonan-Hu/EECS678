@@ -1,0 +1,3 @@
+cd /mnt/c/Users/Chance/Desktop/eecs-678-quash/exercise2
+./HelloWorld 5 < input.txt
+quit

@@ -1,0 +1,8 @@
+HelloWorld 5
+set PATH=/mnt/c/Users/Chance/Desktop/eecs-678-quash/exercise1
+HelloWorld 6
+./HelloWorld 7
+/mnt/c/Users/Chance/Desktop/eecs-678-quash/exercise1/./HelloWorld 8
+cd /mnt/c/Users/Chance/Desktop/eecs-678-quash/exercise1
+./HelloWorld 9
+quit

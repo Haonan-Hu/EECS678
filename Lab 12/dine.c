@@ -227,13 +227,13 @@ int check_for_deadlock()
      * 1. Store the stat filename for this diner into a buffer. Use the sprintf
      * library call.
      */
-    
+    sprintf(filename, "/proc/self/task/%d/stat", diners[i].tid);
 
     /* 
      * 2. Use fopen to open the stat file as a file stream. Open it
      * with read only permissions.
      */
-
+    statf = fopen(filename, "r");
 
 
 
@@ -243,7 +243,10 @@ int check_for_deadlock()
      * also need to determine how many fields to skip over - see proc(5)
      * HINT: Use the the * qualifier to skip tokens without storing them.
      */
-
+    for(j = 0; j < FIELDS_TO_IGNORE; j++)
+    {
+      fscanf(statf, "%*s");
+    }
 
 
 
@@ -253,7 +256,8 @@ int check_for_deadlock()
     /* 
      * 4. Read the time values you want. Use fscanf again. 
      */ 
-
+    fscanf(statf, "%lu", &new_user_time);
+    fscanf(statf, "%lu", &new_sys_time);
 
 
 
@@ -261,7 +265,14 @@ int check_for_deadlock()
     /*
      * 5. Use time values to determine if deadlock has occurred.
      */
-   
+    if(new_user_time != user_time[i] || new_sys_time != sys_time[i])
+    {
+      user_progress[i] = new_user_time - user_time[i];
+      sys_progress[i] = new_sys_time - sys_time[i];
+      sys_time[i] = new_sys_time;
+      user_time[i] = new_user_time;
+      deadlock = 0;
+    }
  
 
 
@@ -272,7 +283,7 @@ int check_for_deadlock()
     /*
      * 6. Close the stat file stream 
      */
-
+    fclose(statf);
   }
   
   return deadlock;
